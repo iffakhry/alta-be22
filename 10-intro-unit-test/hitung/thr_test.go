@@ -13,6 +13,7 @@ func TestHitungBonusTHR(t *testing.T) {
 		expected := 5000000.00
 		actual := HitungBonusTHR(float64(gaji), posisi)
 		assert.Equal(t, expected, actual, "output salah")
+		assert.NotEqual(t, expected, actual, "output salah")
 	})
 
 	t.Run("test posisi c-level", func(t *testing.T) {
