@@ -1,4 +1,4 @@
--- DDL
+-- DDL data definition language
 -- membuat database
 CREATE DATABASE db_be22;
 
@@ -36,3 +36,60 @@ create table products(
 	weight int,
 	constraint fk_users_products foreign key(user_id) references users(id)
 );
+
+create table profile_picture(
+id int primary key auto_increment,
+user_id int unique,
+url text,
+constraint fk_users_profilepic foreign key(user_id) references users(id)
+);
+
+create table favourites(
+	id int primary key auto_increment,
+	user_id int,
+	product_id varchar(255),
+	created_at datetime default current_timestamp,
+	updated_at datetime default current_timestamp,
+	deleted_at datetime,
+	constraint fk_users_favourites foreign key(user_id) references users(id),
+	constraint fk_products_favourites foreign key(product_id) references products(id)
+);
+
+create table dummy(
+id int primary key auto_increment,
+name varchar(255)
+);
+
+-- memodifikasi table (ALTER)
+-- menambahkan kolom
+ALTER table dummy 
+ADD COLUMN description text;
+
+-- mengubah tipe data column
+ALTER table dummy 
+MODIFY COLUMN description varchar(255);
+
+-- menghapus kolom
+ALTER table dummy 
+DROP COLUMN description;
+
+ALTER table dummy 
+ADD COLUMN user_id int;
+
+-- menambahkan foreign key
+ALTER table dummy 
+ADD CONSTRAINT fk_user_dummy
+FOREIGN KEY(user_id) REFERENCES users(id);
+
+-- menghapus FK
+ALTER table dummy 
+DROP FOREIGN KEY fk_user_dummy;
+
+show columns from dummy;
+
+-- menghapus table
+DROP TABLE dummy;
+
+-- menghapus database
+DROP DATABASE db_be22;
+
