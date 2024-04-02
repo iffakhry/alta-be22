@@ -51,8 +51,8 @@ create table favourites(
 	created_at datetime default current_timestamp,
 	updated_at datetime default current_timestamp,
 	deleted_at datetime,
-	constraint fk_users_favourites foreign key(user_id) references users(id),
-	constraint fk_products_favourites foreign key(product_id) references products(id)
+	constraint fk_users_favourites foreign key(user_id) references users(id) ON UPDATE RESTRICT ON DELETE RESTRICT,
+	constraint fk_products_favourites foreign key(product_id) references products(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 create table dummy(
@@ -92,4 +92,8 @@ DROP TABLE dummy;
 
 -- menghapus database
 DROP DATABASE db_be22;
+
+
+ALTER TABLE db_be22.profile_picture DROP FOREIGN KEY fk_users_profilepic;
+ALTER TABLE db_be22.profile_picture ADD CONSTRAINT fk_users_profilepic FOREIGN KEY (user_id) REFERENCES db_be22.users(id) ON DELETE CASCADE ON UPDATE CASCADE;
 
