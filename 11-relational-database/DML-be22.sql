@@ -159,3 +159,127 @@ SELECT * FROM products WHERE stock > 10 OR `type` = 'elektronik' OR weight = 1 o
 SELECT * FROM products LIMIT 2;
 SELECT * FROM products order by stock ASC LIMIT 1;
 SELECT * FROM products WHERE stock > 10 OR `type` = 'elektronik' OR weight = 1 order by stock ASC LIMIT 1;
+
+
+-- JOIN
+select * FROM products;
+SELECT * FROM users;
+SELECT * from profile_picture;
+SELECT * from favourites f ;
+SELECT id, user_id, product_name, price from products;
+
+SELECT id, owner_name, store_name from users;
+
+-- INNER JOIN
+-- menampilkan data product beserta data pemilik (owner name dan store name)
+SELECT products.id, products.user_id, products.product_name, products.price, users.id, users.owner_name, users.store_name 
+from products
+INNER JOIN users ON products.user_id = users.id ;
+
+-- menampilkan data user beserta url foto profilnya
+-- memberikan alias ke table dan kolom
+SELECT u.id, u.owner_name , u.email , pp.url as url_photo  
+from users u
+INNER JOIN profile_picture pp ON u.id = pp.user_id ;
+
+-- LEFT JOIN =  seluruh data di table kiri akan dimunculkan
+-- menampilkan seluruh/semua data user beserta url foto profilnya
+SELECT u.id, u.owner_name , u.email , pp.url as url_photo  
+from users u
+LEFT JOIN profile_picture pp ON u.id = pp.user_id ;
+
+-- RIGHT JOIN = seluruh data di table kanan akan dimunculkan
+SELECT u.id, u.owner_name , u.email , pp.url as url_photo  
+from users u
+RIGHT JOIN profile_picture pp ON u.id = pp.user_id ;
+
+SELECT u.id, u.owner_name , u.email , pp.url as url_photo  
+from profile_picture pp
+RIGHT JOIN users u ON u.id = pp.user_id ;
+
+
+-- menampilkan seluruh data product beserta data pemilik dan foto pemilik
+SELECT 
+products.id , products.product_name , products.price , products.stock, products.user_id,
+users.owner_name , profile_picture.url 
+from products 
+INNER JOIN users ON products.user_id  = users.id 
+LEFT JOIN profile_picture ON users.id = profile_picture.user_id ;
+
+-- menampilkan product yg difavoritkan oleh user, tampilkan nama yang memfavoritkan, tampilkan nama pemilik productnya
+select products.id, products.product_name, uowner.owner_name  ,favourites.user_id , users.owner_name as name, favourites.created_at 
+from products
+inner join favourites ON products.id = favourites.product_id 
+inner join users ON favourites.user_id = users.id
+inner join users uowner ON products.user_id = uowner.id;
+
+-- UNION = distinct
+-- UNION ALL = duplicate
+SELECT product_name from products
+UNION
+select owner_name from users;
+
+-- AGGREGATION
+-- MIN
+select min(stock) as min_stock from products;
+select min(created_at) as min_created from favourites;
+
+-- MAX
+select max(stock) as max_stock from products;
+
+-- SUM / jumlah total nilai
+SELECT * from products p ;
+SELECT SUM(stock) as jumlah_stock from products; 
+SELECT SUM(price) as jumlah_harga from products; 
+
+-- AVG / average / rata-rata
+SELECT AVG(stock) as rata_stock from products; 
+SELECT AVG(price) as rata_harga from products; 
+
+-- COUNT / banyaknya data/ jumlah data
+-- banyaknya product
+SELECT COUNT(id) from products; 
+SELECT COUNT(id) from users u ; 
+
+SELECT * FROM products p ;
+-- tampilkan data user beserta jumlah product yg dimilikinya
+SELECT users.id, users.owner_name , users.email , COUNT(products.id) as jumlah_product
+from users
+INNER JOIN products ON users.id = products.user_id 
+GROUP BY products.user_id ;
+
+SELECT users.id, users.owner_name , users.email , profile_picture.url , COUNT(products.id) as jumlah_product
+from users
+INNER JOIN products ON users.id = products.user_id 
+LEFT JOIN profile_picture ON users.id = profile_picture.user_id  
+GROUP BY products.user_id ;
+
+-- order of execution
+SELECT users.id, users.owner_name , users.email , profile_picture.url , COUNT(products.id) as jumlah_product
+from users
+INNER JOIN products ON users.id = products.user_id 
+LEFT JOIN profile_picture ON users.id = profile_picture.user_id  
+WHERE users.id  = 3
+GROUP BY products.user_id 
+;
+
+SELECT users.id, users.owner_name , users.email , profile_picture.url , COUNT(products.id) as jumlah_product
+from users
+INNER JOIN products ON users.id = products.user_id 
+LEFT JOIN profile_picture ON users.id = profile_picture.user_id  
+GROUP BY products.user_id
+ORDER  BY COUNT(products.id) ASC
+LIMIT 2
+;
+
+-- HAVING
+-- tampilkan data user beserta jumlah product yg dimilikinya, tampilkan hanya user yang memiliki product lebih dari 2
+SELECT users.id, users.owner_name , users.email , COUNT(products.id) as jumlah_product
+from users
+INNER JOIN products ON users.id = products.user_id 
+GROUP BY products.user_id
+HAVING COUNT(products.id) > 2 ;
+
+
+
+
