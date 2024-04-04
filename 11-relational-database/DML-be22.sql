@@ -280,6 +280,76 @@ INNER JOIN products ON users.id = products.user_id
 GROUP BY products.user_id
 HAVING COUNT(products.id) > 2 ;
 
+-- SUBQUERY
+-- 1 tampilkan data user yang punya product
 
+-- 1a tampilkan semua user id yang mempunyai product
+SELECT * from products;
+SELECT user_id from products;
+SELECT DISTINCT user_id from products;
+SELECT user_id from products GROUP BY user_id ;
 
+-- 1b tampilkan data user
+SELECT * from users;
+
+-- 1c tampilkan data user yang punya product
+SELECT * from users WHERE id IN (SELECT user_id from products GROUP BY user_id);
+-- SELECT * from users WHERE id IN (1,3,6)
+
+-- update users set status = "banned" where id in (select user_id from reports group by user_id having ...)
+
+-- tampilkan data user yang tidak punya product
+SELECT * from users WHERE id NOT IN (SELECT user_id from products GROUP BY user_id);
+
+-- tampilkan data user yang punya product pakai pendekatan join
+select DISTINCT users.id, users.owner_name , users.email 
+from users 
+inner join products ON users.id = products.user_id ;
+
+-- FUNCTION
+SELECT COUNT(*) FROM products WHERE user_id = 9;
+
+-- buat function di file terpisah
+DELIMITER $$
+CREATE FUNCTION sf_count_product_peruser(user_id_p int) RETURNS INT DETERMINISTIC
+BEGIN
+DECLARE total INT;
+SELECT COUNT(*) INTO total FROM products WHERE user_id = user_id_p;
+RETURN total;
+END$$
+DELIMITER ;
+
+-- menjalankan function
+SELECT sf_count_product_peruser(3);
+
+-- menampilkan list function beserta status func
+show function status where db='db_be22';
+
+-- menghapus function
+DROP function if exists `db_be22`.`sf_count_product_peruser`;
+
+-- TRIGGER
+-- buat dulu triggernya di file terpisah, lalu ketika sudah berhasil, kalian bisa jalankan statement yg mentrigger
+DELIMITER $$
+CREATE TRIGGER delete_all_data_user
+BEFORE DELETE ON users FOR EACH ROW
+BEGIN
+-- declare variables
+DECLARE v_user_id INT;
+SET v_user_id=OLD.id;
+-- trigger code
+DELETE FROM profile_picture WHERE user_id=v_user_id;
+DELETE FROM favourites WHERE user_id=v_user_id;
+DELETE FROM products WHERE user_id=v_user_id;
+END$$
+DELIMITER ;
+
+-- jalankan statement delete, maka secara otomatis trigger akan berjalan
+DELETE from users where id = 6;
+
+SELECT * FROM users u ;
+SELECT * FROM products p ;
+
+-- hapus trigger
+DROP trigger if exists `db_be22`.`delete_all_data_user`;
 
