@@ -353,3 +353,5 @@ SELECT * FROM products p ;
 -- hapus trigger
 DROP trigger if exists `db_be22`.`delete_all_data_user`;
 
+
+SELECT id, owner_name, email, password, phone, sex, address, bank_number, store_name FROM users;
