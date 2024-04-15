@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	// _ "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 )
 
 type User struct {
@@ -29,22 +31,29 @@ func main() {
 	// Capture connection properties.
 	// cfg := mysql.Config{
 	// 	User:   "root",
-	// 	Passwd: "qwerty",
+	// 	Passwd: "qwerty123",
 	// 	Net:    "tcp",
 	// 	Addr:   "127.0.0.1:3306",
 	// 	DBName: "db_be22",
 	// }
-	// db, err = sql.Open("mysql", cfg.FormatDSN())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// cara 2
-	// <username>:<password>@tcp(<hostname>:<port-db>)/<db-name>
-	db, err = sql.Open("mysql", "root:qwerty123@tcp(127.0.0.1:3306)/db_be22")
+	cfg := mysql.Config{
+		User:   os.Getenv("DBUSER"),
+		Passwd: os.Getenv("DBPASS"),
+		Net:    "tcp",
+		Addr:   fmt.Sprintf("%s:%s", os.Getenv("DBHOST"), os.Getenv("DBPORT")),
+		DBName: os.Getenv("DBNAME"),
+	}
+	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// cara 2
+	// <username>:<password>@tcp(<hostname>:<port-db>)/<db-name>
+	// db, err = sql.Open("mysql", "root:qwerty123@tcp(127.0.0.1:3306)/db_be22")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	//check apakah sudah berhasil connect ke db
 	pingErr := db.Ping()
